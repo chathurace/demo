@@ -2,12 +2,12 @@
 import chathurace/edi.core as edi;
 import ballerina/file;
 import ballerina/os;
+import ballerina/log;
+import ballerinax/aws.s3;
 
 import abc.mabc834;
 import abc.mabc835;
 import abc.mabc836;
-import ballerina/log;
-import ballerinax/aws.s3;
 
 s3:ConnectionConfig amazonS3Config1 = {
     accessKeyId: "key",
@@ -30,6 +30,7 @@ public function readEDI(string ediText, EDI_NAMES ediName) returns any|error {
         mappingText = check readS3File(check new(amazonS3Config1), schemaBucket, ediName + ".json", false);
     }
     string mappingDirectory = check file:joinPath("resources", "abc");
+    
     match ediName {
         
         EDI_abc834 => {
@@ -49,10 +50,12 @@ public function readEDI(string ediText, EDI_NAMES ediName) returns any|error {
         EDI_abc835 => {
             check preProcess(ediName, "Health_Care_Claim_Payment_Advice", ediText);
             string mappingPath = check file:joinPath(mappingDirectory, ediName + ".json");
-            if !check file:test(mappingPath, file:EXISTS) {
+            if schemaBucket.length() == 0 && !check file:test(mappingPath, file:EXISTS) {
                 return error("Unknown EDI " + ediName + "\nMissing EDI mapping file: " + check file:getAbsolutePath(mappingPath));    
             }
-            edi:EDIMapping mapping = check edi:readMappingFromFile(mappingPath);
+            edi:EDIMapping mapping = schemaBucket.length() > 0? 
+                check edi:readMappingFromString(mappingText):
+                check edi:readMappingFromFile(mappingPath);
             json jb = check edi:readEDIAsJson(ediText, mapping);
             mabc835:Health_Care_Claim_Payment_Advice b = check jb.cloneWithType(mabc835:Health_Care_Claim_Payment_Advice);
             any targetEDI = mabc835:process(b);
@@ -61,10 +64,12 @@ public function readEDI(string ediText, EDI_NAMES ediName) returns any|error {
         EDI_abc836 => {
             check preProcess(ediName, "Procurement_Notices", ediText);
             string mappingPath = check file:joinPath(mappingDirectory, ediName + ".json");
-            if !check file:test(mappingPath, file:EXISTS) {
+            if schemaBucket.length() == 0 && !check file:test(mappingPath, file:EXISTS) {
                 return error("Unknown EDI " + ediName + "\nMissing EDI mapping file: " + check file:getAbsolutePath(mappingPath));    
             }
-            edi:EDIMapping mapping = check edi:readMappingFromFile(mappingPath);
+            edi:EDIMapping mapping = schemaBucket.length() > 0? 
+                check edi:readMappingFromString(mappingText):
+                check edi:readMappingFromFile(mappingPath);
             json jb = check edi:readEDIAsJson(ediText, mapping);
             mabc836:Procurement_Notices b = check jb.cloneWithType(mabc836:Procurement_Notices);
             any targetEDI = mabc836:process(b);
