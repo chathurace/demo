@@ -27,7 +27,6 @@ public function main() returns error? {
             } else if a is record {|byte[] value;|} {
                 ediText += check string:fromBytes(a.value) + "\n";
                 any target = check readEDI(ediText, EDI_abc834);
-                io:println(target.toString());
                 log:printInfo(target.toString());
             } else {
                 break;
