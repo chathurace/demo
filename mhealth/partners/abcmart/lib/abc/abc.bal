@@ -6,6 +6,7 @@ import ballerina/os;
 import abc.mabc834;
 import abc.mabc835;
 import abc.mabc836;
+import ballerina/log;
 import ballerinax/aws.s3;
 
 s3:ConnectionConfig amazonS3Config1 = {
@@ -20,6 +21,7 @@ public enum EDI_NAMES {
 
 public function readEDI(string ediText, EDI_NAMES ediName) returns any|error {
     string schemaBucket = os:getEnv("SCHEMA_BUCKET");
+    log:printInfo("Schema bucket provided: " + schemaBucket);
     string mappingText = "";
     if schemaBucket.length() > 0 {
         amazonS3Config1.accessKeyId = os:getEnv("AWS_KEY");
