@@ -99,9 +99,6 @@ dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.value"}
 ]
-modules = [
-	{org = "ballerina", packageName = "io", moduleName = "io"}
-]
 
 [[package]]
 org = "ballerina"
@@ -204,6 +201,9 @@ dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.value"},
 	{org = "ballerina", name = "observe"}
+]
+modules = [
+	{org = "ballerina", packageName = "log", moduleName = "log"}
 ]
 
 [[package]]
@@ -315,7 +315,7 @@ dependencies = [
 [[package]]
 org = "chathurace"
 name = "edi"
-version = "0.5.1"
+version = "0.5.2"
 dependencies = [
 	{org = "ballerina", name = "file"},
 	{org = "ballerina", name = "io"},
@@ -338,7 +338,7 @@ name = "abc"
 version = "0.1.0"
 dependencies = [
 	{org = "ballerina", name = "file"},
-	{org = "ballerina", name = "io"},
+	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "os"},
 	{org = "ballerinax", name = "aws.s3"},
 	{org = "chathurace", name = "edi"}
