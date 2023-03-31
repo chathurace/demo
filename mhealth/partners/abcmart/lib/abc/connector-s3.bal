@@ -1,4 +1,5 @@
 import ballerinax/aws.s3;
+import ballerina/log;
 import ballerina/io;
 
 configurable string awsAccessKeyId = ?;
@@ -27,6 +28,7 @@ public function main() returns error? {
                 ediText += check string:fromBytes(a.value) + "\n";
                 any target = check readEDI(ediText, EDI_abc834);
                 io:println(target.toString());
+                log:printInfo(target.toString());
             } else {
                 break;
             }
