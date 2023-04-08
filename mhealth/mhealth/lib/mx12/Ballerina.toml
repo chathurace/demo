@@ -2,7 +2,6 @@
 [package]
 org = "synergy"
 name = "mx12"
-version = "0.1.5"
+version = "0.1.6"
 distribution = "2201.3.1"
 export=["mx12","mx12.m835","mx12.m836","mx12.m834"]
-visibility="private"

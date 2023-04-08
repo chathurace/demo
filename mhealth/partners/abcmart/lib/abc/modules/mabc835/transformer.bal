@@ -10,3 +10,4 @@ public function process(SourceType sourceType) returns TargetType {
 
     return transform(sourceType);
 }
+    
