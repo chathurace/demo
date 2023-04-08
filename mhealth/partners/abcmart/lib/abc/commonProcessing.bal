@@ -22,7 +22,7 @@ function postProcess(string ediName, string mappingName, string ediText, anydata
     // Tracking data is written to a file in this sample code.
     // Change this code as needed to write data to the required detination.
     string trackingFilePath = check file:joinPath("tracking", "data");
-    check io:fileWriteString(trackingData.toString(), io:APPEND);
+    check io:fileWriteString(trackingFilePath, trackingData.toString(), io:APPEND);
 
     return targetType;
 }    
