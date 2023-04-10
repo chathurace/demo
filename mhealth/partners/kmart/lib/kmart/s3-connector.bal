@@ -18,6 +18,7 @@ configurable string schemaURL = ?;
 configurable string schemaAccessToken = ?;
 
 configurable string applicationEndpoint = ?;
+configurable string applicationToken = ?;
 
 s3:ConnectionConfig amazonS3Config = {
     accessKeyId: awsAccessKeyId,
@@ -95,7 +96,7 @@ public function readEDIs(EDIReader ediReader, s3:Client s3Client) returns error?
 function processEDI(EDIReader ediReader, s3:Client s3Client, string ediName, string ediText, string? ediFileName) returns error? {
     EDI_NAMES ediCode = check ediName.ensureType();
     anydata target = check ediReader.readEDI(ediText, ediCode, ediFileName);
-    json response = check httpClient->/[ediName].post(target.toJson());
+    json response = check httpClient->/[ediName].post(target.toJson(), {"API-Key": applicationToken});
     log:printInfo(response.toString());    
 }
 
