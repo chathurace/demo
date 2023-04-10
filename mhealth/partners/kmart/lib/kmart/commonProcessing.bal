@@ -1,11 +1,11 @@
 // import ballerina/sql;
-import ballerinax/mysql;
-import ballerinax/mysql.driver as _;
+// import ballerinax/mysql;
+// import ballerinax/mysql.driver as _;
 
 import ballerina/time;
 import ballerina/log;
 
-mysql:Client mysqlEp = check new (host = "localhost", user = "demouser1", password = "demouser1", database = "tradetrack");
+// mysql:Client mysqlEp = check new (host = "localhost", user = "demouser1", password = "demouser1", database = "tradetrack");
 
 type EDITrackingData record {
     string partnerId;
