@@ -30,9 +30,11 @@ type BenefitEnrollment record {|
 //     region: awsRegion
 // }; 
 
+listener http:Listener appService1 = new(9090);
+
 # A service representing a network-accessible API
 # bound to port `9090`.
-service /edis on new http:Listener(9090) {
+service /edis on appService1 {
 
     // resource function post m834(@http:Payload m834:Benefit_Enrollment_and_Maintenance benefit) returns string|error {
     //     log:printInfo(benefit.Beginning_Segment.Action_Code ?: "Action code not defined.");
