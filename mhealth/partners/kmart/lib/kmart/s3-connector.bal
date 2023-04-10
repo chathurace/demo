@@ -12,7 +12,7 @@ configurable string awsRegion = ?;
 configurable string inputBucket = "m-kmart-input";
 configurable string processedBucket = "m-kmart-processed";
 configurable string failedBucket = "m-kmart-failed";
-configurable decimal pollingInterval = 5000;
+configurable decimal pollingInterval = 5;
 
 configurable string schemaURL = ?;
 configurable string schemaAccessToken = ?;
@@ -95,7 +95,7 @@ public function readEDIs(EDIReader ediReader, s3:Client s3Client) returns error?
 function processEDI(EDIReader ediReader, s3:Client s3Client, string ediName, string ediText, string? ediFileName) returns error? {
     EDI_NAMES ediCode = check ediName.ensureType();
     anydata target = check ediReader.readEDI(ediText, ediCode, ediFileName);
-    json response = check httpClient->/edis/[ediName].post(target.toJson());
+    json response = check httpClient->/[ediName].post(target.toJson());
     log:printInfo(response.toString());    
 }
 

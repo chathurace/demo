@@ -59,8 +59,8 @@ service /edis on new http:Listener(9090) {
     //     check s3Client->createObject(enrollmentsBucket, objectName, b.toJsonString());
     // }
 
-    resource function post abc834(@http:Payload json message) returns json|error? {
+    resource function post '834(@http:Payload json message) returns json|error? {
         log:printInfo("Enrollment service: " + message.toString());
-        return {a: "k"};
+        return {appEp: "Received the message."};
     }
 }

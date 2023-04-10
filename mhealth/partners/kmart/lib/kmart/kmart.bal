@@ -61,7 +61,7 @@ public class EDIReader {
     function getEDISchemaText(string ediName) returns string|error {
         http:Client sclient = check new(schemaURL);
         string fileName = ediName + ".json";
-        string authHeader = "Bearer" + self.schemaAccessToken;
+        string authHeader = "Bearer " + self.schemaAccessToken;
         string schemaContent = check sclient->/[fileName]({
             Authorization: authHeader, 
             Accept: "application/vnd.github.raw"});
