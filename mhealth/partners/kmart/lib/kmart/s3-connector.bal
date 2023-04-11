@@ -1,30 +1,31 @@
-
-
 import ballerinax/aws.s3;
 import ballerina/http;
 import ballerina/regex;
 import ballerina/lang.runtime;
 import ballerina/log;
 
-configurable string awsAccessKeyId = "";
-configurable string awsAccessSecret = "";
-configurable string awsRegion = "";
-configurable string inputBucket = "m-kmart-input";
-configurable string processedBucket = "m-kmart-processed";
-configurable string failedBucket = "m-kmart-failed";
+configurable string awsAccessKeyId = ?;
+configurable string awsAccessSecret = ?;
+configurable string awsRegion = ?;
+configurable string inputBucket = "m-" + partnerId + "-input";
+configurable string processedBucket = "m-" + partnerId + "-processed";
+configurable string failedBucket = "m-" + partnerId + "-failed";
 configurable decimal pollingInterval = 5;
 
-configurable string schemaURL = "";
-configurable string schemaAccessToken = "";
+configurable string schemaURL = ?;
+configurable string schemaAccessToken = ?;
 
-configurable string applicationEndpoint = "";
-configurable string applicationToken = "";
+configurable string applicationEndpoint = ?;
+configurable string applicationToken = ?;
 
 s3:ConnectionConfig amazonS3Config = {
     accessKeyId: awsAccessKeyId,
     secretAccessKey: awsAccessSecret,
     region: awsRegion
 }; 
+
+// Provide a suitable EDITracker implementation
+EDITracker tracker = new LoggingTracker();
 
 http:Client httpClient = check new(applicationEndpoint);
 
@@ -70,7 +71,8 @@ public function readEDIs(EDIReader ediReader, s3:Client s3Client) returns error?
             }
             var result = processEDI(ediReader, s3Client, ediName, ediText, parts[1]);
             if result is error {
-                log:printError(result.message());
+                log:printError("Failed to process EDI: " + ediName + " of file: " + parts[1] + "\n" + result.message());
+                check tracker.track({partnerId: partnerId, ediName: ediName, ediFileName: parts[1], status: "FAILED"});
                 error? e = s3Client->createObject(failedBucket, fileName, ediText);
                 if e is error {
                     log:printError("Failed to copy invalid EDI " + fileName + " to bucket " + failedBucket + ". " + e.message());
@@ -86,7 +88,9 @@ public function readEDIs(EDIReader ediReader, s3:Client s3Client) returns error?
             error? e3 = s3Client->deleteObject(inputBucket, fileName);
             if e3 is error {
                 log:printError("Failed to delete the processed EDI file: " + fileName + " from bucket " + inputBucket + ". " + e3.message());
+                continue;
             }
+            check tracker.track({partnerId: partnerId, ediName: ediName, ediFileName: parts[1], status: "COMPLETED"});
         } else {
             log:printError("Object/file does not contain a valid name in EDI input bucket: " + inputBucket);
         }    
@@ -94,7 +98,12 @@ public function readEDIs(EDIReader ediReader, s3:Client s3Client) returns error?
 }
 
 function processEDI(EDIReader ediReader, s3:Client s3Client, string ediName, string ediText, string? ediFileName) returns error? {
-    EDI_NAMES ediCode = check ediName.ensureType();
+    check tracker.track({partnerId: partnerId, ediName: ediName, ediFileName: ediFileName, status: "RECEIVED"});
+
+    EDI_NAMES|error ediCode = ediName.ensureType();
+    if ediCode is error {
+        return error("Unsupported EDI format: " + ediName + " in file: " + (ediFileName?:"") + "\n" + ediCode.message());
+    }
     anydata target = check ediReader.readEDI(ediText, ediCode, ediFileName);
     json|error response = httpClient->/[ediName].post(target.toJson(), {"API-Key": applicationToken});
     if response is error {

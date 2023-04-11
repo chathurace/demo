@@ -6,6 +6,8 @@ import kmart.m835;
 import kmart.m836;
 import kmart.m834;
 
+final string partnerId = "kmart";
+
 public enum EDI_NAMES {
     EDI_835 = "835", EDI_836 = "836", EDI_834 = "834"
 }
