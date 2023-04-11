@@ -25,7 +25,7 @@ s3:ConnectionConfig amazonS3Config = {
 }; 
 
 // Provide a suitable EDITracker implementation
-EDITracker tracker = new LoggingTracker();
+EDITracker tracker = new DBTracker();
 
 http:Client httpClient = check new(applicationEndpoint);
 
@@ -76,8 +76,8 @@ public function readEDIs(EDIReader ediReader, s3:Client s3Client) returns error?
                 error? e = s3Client->createObject(failedBucket, fileName, ediText);
                 if e is error {
                     log:printError("Failed to copy invalid EDI " + fileName + " to bucket " + failedBucket + ". " + e.message());
-                    continue;
                 }
+                continue;
             } else {
                 error? e2 = s3Client->createObject(processedBucket, fileName, ediText);
                 if e2 is error {
