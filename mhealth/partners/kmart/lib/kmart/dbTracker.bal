@@ -18,7 +18,7 @@ class DBTracker {
         log:printInfo("EDI Tracking: " + time:utcNow()[0].toString() + " | " + data.toString());
         sql:ExecutionResult|error executeResponse = mysqlEp->execute(
             sqlQuery = `insert into editracking (partnerId, receivedTime, ediName, schemaName, ediFileName, status) 
-                values (${data.partnerId}, ${time:utcNow()[0]}, ${data.ediName}, ${data.schemaName}, ${data.ediFileName}, 'TRANSFORMATION COMPLETED')`);
+                values (${data.partnerId}, ${time:utcNow()[0]}, ${data.ediName}, ${data.schemaName}, ${data.ediFileName}, ${data.status})`);
         if executeResponse is error {
             log:printError("Couldn't insert EDI tracking data into the database. " + executeResponse.message());
         } else if executeResponse.affectedRowCount == sql:EXECUTION_FAILED {
