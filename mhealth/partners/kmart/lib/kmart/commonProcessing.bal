@@ -5,11 +5,12 @@ import ballerinax/mysql.driver as _;
 import ballerina/time;
 import ballerina/log;
 
-configurable string dbHost = ?;
-configurable string dbUser = ?;
-configurable string dbPass = ?;
+configurable string dbHost = "";
+configurable string dbName = "";
+configurable string dbUser = "";
+configurable string dbPass = "";
 
-mysql:Client mysqlEp = check new (host = dbHost, user = dbUser, password = dbPass, database = "");
+mysql:Client mysqlEp = check new (host = dbHost, user = dbUser, password = dbPass, database = dbName);
 
 type EDITrackingData record {
     string partnerId;

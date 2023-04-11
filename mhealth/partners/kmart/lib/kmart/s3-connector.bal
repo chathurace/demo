@@ -6,19 +6,19 @@ import ballerina/regex;
 import ballerina/lang.runtime;
 import ballerina/log;
 
-configurable string awsAccessKeyId = ?;
-configurable string awsAccessSecret = ?;
-configurable string awsRegion = ?;
+configurable string awsAccessKeyId = "";
+configurable string awsAccessSecret = "";
+configurable string awsRegion = "";
 configurable string inputBucket = "m-kmart-input";
 configurable string processedBucket = "m-kmart-processed";
 configurable string failedBucket = "m-kmart-failed";
 configurable decimal pollingInterval = 5;
 
-configurable string schemaURL = ?;
-configurable string schemaAccessToken = ?;
+configurable string schemaURL = "";
+configurable string schemaAccessToken = "";
 
-configurable string applicationEndpoint = ?;
-configurable string applicationToken = ?;
+configurable string applicationEndpoint = "";
+configurable string applicationToken = "";
 
 s3:ConnectionConfig amazonS3Config = {
     accessKeyId: awsAccessKeyId,
@@ -96,7 +96,11 @@ public function readEDIs(EDIReader ediReader, s3:Client s3Client) returns error?
 function processEDI(EDIReader ediReader, s3:Client s3Client, string ediName, string ediText, string? ediFileName) returns error? {
     EDI_NAMES ediCode = check ediName.ensureType();
     anydata target = check ediReader.readEDI(ediText, ediCode, ediFileName);
-    json response = check httpClient->/[ediName].post(target.toJson(), {"API-Key": applicationToken});
+    json|error response = httpClient->/[ediName].post(target.toJson(), {"API-Key": applicationToken});
+    if response is error {
+        return error("Failed to send EDI data to the backend application - " + 
+            applicationEndpoint + "\n" + response.message());
+    }
     log:printInfo(response.toString());    
 }
 
