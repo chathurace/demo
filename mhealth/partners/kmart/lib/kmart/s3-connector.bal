@@ -24,7 +24,7 @@ s3:ConnectionConfig amazonS3Config = {
     region: awsRegion
 }; 
 
-// Provide a suitable EDITracker implementation
+// Provide a suitable EDITracker implementation. By default tracking data is logged.
 EDITracker tracker = new DBTracker();
 
 http:Client httpClient = check new(applicationEndpoint);
