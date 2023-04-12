@@ -26,7 +26,7 @@ s3:ConnectionConfig amazonS3Config = {
 }; 
 
 // Provide a suitable EDITracker implementation. By default tracking data is logged.
-EDITracker tracker = new LoggingTracker();
+EDITracker tracker = new DBTracker();
 
 http:Client httpClient = check new(applicationEndpoint);
 
