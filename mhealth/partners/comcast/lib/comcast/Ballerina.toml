@@ -4,4 +4,4 @@ org = "mhealth"
 name = "comcast"
 version = "0.1.0"
 distribution = "2201.3.1"
-export=["comcast","comcast.mabc834","comcast.mabc835","comcast.mabc836"]
+export=["comcast","comcast.m835","comcast.m836","comcast.m834"]
