@@ -44,12 +44,12 @@ public function main() {
         if e is error {
             log:printError("Couldn't read EDIs.\n" + e.message());
         }
-        if pollingInterval < 0d {
+        if pollingInterval < 0 {
             // Negative values for polling interval forces this to run one time.
             // Can be used with external schedulars.
             break;
         }
-        runtime:sleep(pollingInterval);
+        runtime:sleep(<decimal>pollingInterval);
     }
 }
 
