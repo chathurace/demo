@@ -12,7 +12,7 @@ configurable string awsRegion = ?;
 configurable string inputBucket = ?;
 configurable string processedBucket = ?;
 configurable string failedBucket = ?;
-configurable decimal pollingInterval = 5;
+configurable int pollingInterval = 5;
 
 configurable string schemaURL = ?;
 configurable string schemaAccessToken = ?;
