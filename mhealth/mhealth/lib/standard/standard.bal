@@ -6,7 +6,7 @@ import standard.m835;
 import standard.m836;
 import standard.m834;
 
-final string partnerId = "standard";
+configurable string partnerId = "standard";
 
 public enum EDI_NAMES {
     EDI_835 = "835", EDI_836 = "836", EDI_834 = "834"
