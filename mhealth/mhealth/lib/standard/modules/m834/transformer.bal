@@ -1,7 +1,7 @@
 
 
-type SourceType Procurement_Notices;
-type TargetType Procurement_Notices;
+type SourceType Benefit_Enrollment_and_Maintenance;
+type TargetType Benefit_Enrollment_and_Maintenance;
 
 function transform(SourceType sourceType) returns TargetType => sourceType;
 
@@ -10,3 +10,4 @@ public function process(SourceType sourceType) returns TargetType {
 
     return transform(sourceType);
 }
+    

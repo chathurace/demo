@@ -2,11 +2,11 @@
 import chathurace/edi.core as edi;
 import ballerina/http;
 
-import comcast.m835;
-import comcast.m836;
-import comcast.m834;
+import standard.m835;
+import standard.m836;
+import standard.m834;
 
-configurable string partnerId = ?;
+final string partnerId = "standard";
 
 public enum EDI_NAMES {
     EDI_835 = "835", EDI_836 = "836", EDI_834 = "834"

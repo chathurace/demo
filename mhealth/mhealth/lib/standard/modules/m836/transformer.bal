@@ -1,7 +1,7 @@
 
 
-type SourceType Health_Care_Claim_Payment_Advice;
-type TargetType Health_Care_Claim_Payment_Advice;
+type SourceType Procurement_Notices;
+type TargetType Procurement_Notices;
 
 function transform(SourceType sourceType) returns TargetType => sourceType;
 
@@ -10,3 +10,4 @@ public function process(SourceType sourceType) returns TargetType {
 
     return transform(sourceType);
 }
+    
