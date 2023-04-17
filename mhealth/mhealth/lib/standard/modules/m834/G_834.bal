@@ -41,7 +41,7 @@ public type Date_or_Time_or_Period_Type record {|
 public type Monetary_Amount_Information_Type record {|
    string Amount_Qualifier_Code;
    float Monetary_Amount;
-   string Credit_Debit_Flag_Code;
+   string Credit_Debit_Flag_Code?;
 |};
 
 public type Composite_Unit_of_Measure_GType record {|
