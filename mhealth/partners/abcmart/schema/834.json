@@ -107,6 +107,14 @@
             "components": []
           },
           {
+            "tag": "Action_Code",
+            "repeat": false,
+            "required": false,
+            "truncatable": true,
+            "dataType": "string",
+            "components": []
+          },
+          {
             "tag": "Security_Level_Code",
             "repeat": false,
             "required": false,

@@ -12,6 +12,7 @@ public type Beginning_Segment_Type record {|
    string Time_Code?;
    string Reference_Identification_1?;
    string Transaction_Type_Code?;
+   string Action_Code?;
    string Security_Level_Code?;
 |};
 
