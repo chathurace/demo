@@ -6,8 +6,6 @@ configurable string ediSchemaAccessToken = ?;
 
 EDIReader ediReader = new(ediSchemaURL, ediSchemaAccessToken);
 
-@http:ServiceConfig
-
 service /abcEDIParser on new http:Listener(9090) {
 
     resource function post [string ediType](@http:Payload string ediData) returns anydata|error {
