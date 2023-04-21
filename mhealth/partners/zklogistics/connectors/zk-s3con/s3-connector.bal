@@ -56,7 +56,7 @@ public function main() {
 
 public function readEDIs(s3:Client s3Client) returns error? {
 
-    string[] edis = check ediClient->/edis;
+    string[] edis = check ediClient->/edis.get({"API-Key": ediToken});
     s3:S3Object[] listObjects = check s3Client->listObjects(inputBucket);
     foreach s3:S3Object o in listObjects {
         string? fileName = o.objectName;
