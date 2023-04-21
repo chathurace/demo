@@ -56,7 +56,7 @@ public function main() {
 
 public function readEDIs(s3:Client s3Client) returns error? {
 
-    string[] edis = check ediClient->/abcParser/edis;
+    string[] edis = check ediClient->/edis;
     s3:S3Object[] listObjects = check s3Client->listObjects(inputBucket);
     foreach s3:S3Object o in listObjects {
         string? fileName = o.objectName;
@@ -102,7 +102,7 @@ public function readEDIs(s3:Client s3Client) returns error? {
 function processEDI(s3:Client s3Client, string ediName, string ediText, string? ediFileName) returns error? {
     check tracker.track({partnerId: partnerId, ediName: ediName, ediFileName: ediFileName, status: "RECEIVED"});
 
-    json target = check ediClient->/abcParser/[ediName].post(ediText, {"API-Key": ediToken});
+    json target = check ediClient->/[ediName].post(ediText, {"API-Key": ediToken});
     json|error response = httpClient->/[ediName].post(target, {"API-Key": applicationToken});
     if response is error {
         return error("Failed to send EDI data to the backend application - " + 
