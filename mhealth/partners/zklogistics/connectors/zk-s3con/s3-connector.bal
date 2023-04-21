@@ -6,19 +6,20 @@ import ballerina/regex;
 import ballerina/lang.runtime;
 import ballerina/log;
 
+configurable string partnerId = ?;
 configurable string awsAccessKeyId = ?;
 configurable string awsAccessSecret = ?;
 configurable string awsRegion = ?;
 configurable string inputBucket = ?;
 configurable string processedBucket = ?;
 configurable string failedBucket = ?;
-configurable int pollingInterval = 5;
-
-configurable string schemaURL = ?;
-configurable string schemaAccessToken = ?;
+configurable int pollingInterval = -1;
 
 configurable string applicationEndpoint = ?;
 configurable string applicationToken = ?;
+
+configurable string ediEndpoint = ?;
+configurable string ediToken = ?;
 
 s3:ConnectionConfig amazonS3Config = {
     accessKeyId: awsAccessKeyId,
@@ -26,13 +27,12 @@ s3:ConnectionConfig amazonS3Config = {
     region: awsRegion
 }; 
 
-// Provide a suitable EDITracker implementation. By default tracking data is logged.
-EDITracker tracker = new DBTracker();
+EDITracker tracker = new LoggingTracker();
 
 http:Client httpClient = check new(applicationEndpoint);
+http:Client ediClient = check new(ediEndpoint);
 
 public function main() {
-    EDIReader ediReader = new(schemaURL, schemaAccessToken);
     s3:Client|error s3Client = new (amazonS3Config);    
     if s3Client is error {
         log:printError("Failed to iniitalize Amazon S3 client. " + s3Client.message());
@@ -40,7 +40,7 @@ public function main() {
     }
 
     while true {
-        error? e = readEDIs(ediReader, s3Client);
+        error? e = readEDIs(s3Client);
         if e is error {
             log:printError("Couldn't read EDIs.\n" + e.message());
         }
@@ -54,9 +54,9 @@ public function main() {
 }
 
 
-public function readEDIs(EDIReader ediReader, s3:Client s3Client) returns error? {
+public function readEDIs(s3:Client s3Client) returns error? {
 
-    string[] edis = ediReader.getEDINames();
+    string[] edis = check ediClient->/abcParser/edis;
     s3:S3Object[] listObjects = check s3Client->listObjects(inputBucket);
     foreach s3:S3Object o in listObjects {
         string? fileName = o.objectName;
@@ -71,7 +71,7 @@ public function readEDIs(EDIReader ediReader, s3:Client s3Client) returns error?
                 log:printError("Couldn't read EDI file " + fileName + " from bucket " + inputBucket);
                 continue;
             }
-            var result = processEDI(ediReader, s3Client, ediName, ediText, parts[1]);
+            var result = processEDI(s3Client, ediName, ediText, parts[1]);
             if result is error {
                 log:printError("Failed to process EDI: " + ediName + " of file: " + parts[1] + "\n" + result.message());
                 check tracker.track({partnerId: partnerId, ediName: ediName, ediFileName: parts[1], status: "FAILED"});
@@ -99,15 +99,11 @@ public function readEDIs(EDIReader ediReader, s3:Client s3Client) returns error?
     }
 }
 
-function processEDI(EDIReader ediReader, s3:Client s3Client, string ediName, string ediText, string? ediFileName) returns error? {
+function processEDI(s3:Client s3Client, string ediName, string ediText, string? ediFileName) returns error? {
     check tracker.track({partnerId: partnerId, ediName: ediName, ediFileName: ediFileName, status: "RECEIVED"});
 
-    EDI_NAMES|error ediCode = ediName.ensureType();
-    if ediCode is error {
-        return error("Unsupported EDI format: " + ediName + " in file: " + (ediFileName?:"") + "\n" + ediCode.message());
-    }
-    anydata target = check ediReader.readEDI(ediText, ediCode, ediFileName);
-    json|error response = httpClient->/[ediName].post(target.toJson(), {"API-Key": applicationToken});
+    json target = check ediClient->/abcParser/[ediName].post(ediText, {"API-Key": ediToken});
+    json|error response = httpClient->/[ediName].post(target, {"API-Key": applicationToken});
     if response is error {
         return error("Failed to send EDI data to the backend application - " + 
             applicationEndpoint + "\n" + response.message());

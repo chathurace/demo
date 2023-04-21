@@ -4,15 +4,36 @@ import ballerinax/mysql.driver as _;
 import ballerina/time;
 import ballerina/log;
 
-configurable string dbHost = ?;
-configurable string dbName = ?;
-configurable string dbUser = ?;
-configurable string dbPass = ?;
+configurable string dbHost = "";
+configurable string dbName = "";
+configurable string dbUser = "";
+configurable string dbPass = "";
 
 mysql:Client mysqlEp = check new (host = dbHost, user = dbUser, password = dbPass, database = dbName);
 
+type EDITrackingData record {
+    string partnerId;
+    string ediName;
+    string schemaName?;
+    string ediFileName?;
+    string status?;
+};
+
+type EDITracker object {
+    function track(EDITrackingData data) returns error?;
+};
+
+class LoggingTracker {
+    * EDITracker;
+
+    function track(EDITrackingData data) returns error? {
+        log:printInfo("EDI tracking: " + data.toString());
+    }
+}
+
+
 class DBTracker {
-    *EDITracker;
+    * EDITracker;
 
     function track(EDITrackingData data) returns error? {
         log:printInfo("EDI Tracking: " + time:utcNow()[0].toString() + " | " + data.toString());

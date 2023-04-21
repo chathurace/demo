@@ -24,7 +24,7 @@ public class EDIReader {
     public function readEDI(string ediText, EDI_NAMES ediName, string? ediFileName) returns anydata|error {
         string|error mappingText = self.getEDISchemaText(ediName);
         if mappingText is error {
-            return error("Schema for the EDI " + ediName + " not found in URL " + schemaURL);
+            return error("Schema for the EDI " + ediName + " not found in URL " + self.schemaURL);
         }
         
         match ediName {
@@ -61,7 +61,7 @@ public class EDIReader {
     }
 
     function getEDISchemaText(string ediName) returns string|error {
-        http:Client sclient = check new(schemaURL);
+        http:Client sclient = check new(self.schemaURL);
         string fileName = ediName + ".json";
         string authHeader = "Bearer" + self.schemaAccessToken;
         string schemaContent = check sclient->/[fileName]({
