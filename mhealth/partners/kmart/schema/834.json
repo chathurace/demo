@@ -8,7 +8,7 @@
       "repetition": "NOT_USED"
     },
     "ignoreSegments": [],
-    "preserveEmptyFields": false,
+    "preserveEmptyFields": true,
     "segments": [
       {
         "code": "ST",
